@@ -1,60 +1,114 @@
-from app import data
+from app import database
 
 
-def exchange_currency():
-    soum = int(input("Enter your money in soum: "))
-    code = input("Enter the code of currency_dict: ").upper()
-    for currency in data:
-        if currency['code'] == code:
-            result = soum / float(currency['cb_price'])
-            print(f"Your money in {currency['code']} = {result}")
+def check_kitchen_name(kitchen_name):
+    if kitchen_name in database:
+        return True
+    else:
+        return False
+
+
+def check_food_name(food_name):
+    for kitchen_name, foods in database.items():
+        if food_name in foods.keys():
+            return True
+    return False
+
+
+def add_kitchen():
+    print(f"Select the desired section: kitchen/food ")
+    user_select = input("Enter the name of your choice: ")
+    if user_select == "kitchen":
+        kitchen_name = input("Enter kitchen name: ")
+        if check_kitchen_name(kitchen_name):
+            print("This kitchen already exists")
+            return add_kitchen()
+        else:
+            database[kitchen_name] = {}
+            return show_menu()
+    else:
+        food_name = input("Enter food name: ")
+        kitchen_name = input("Enter kitchen name: ")
+        if check_food_name(food_name):
+            print("This food already exists")
+            return add_kitchen()
+        else:
+            check_kitchen_name(kitchen_name)
+            price = int(input("Enter food price: "))
+            database[kitchen_name][food_name] = price
+            print("The food was successfully added to the system")
             return show_menu()
 
-    print("Wrong code")
-    return exchange_currency()
+
+def search_kitchen():
+    kitchen_name = input("Enter kitchen name: ")
+    if not check_kitchen_name(kitchen_name):
+        print("There is no such kind of kitchen")
+        return search_kitchen()
+    else:
+        print(f"Restaurant: {kitchen_name.upper()}")
+        for food_name, price in database[kitchen_name].items():
+            print(f"{food_name}: {price}")
+        return show_menu()
 
 
-def other_currency():
-    code = input("Enter the code of currency_dict: ").upper()
-    for currency in data:
-        if currency['code'] == code:
-            print(f"{currency['code']} is {currency['cb_price']} soum")
-            return show_menu()
+def search_food():
+    food_name = input("Enter food name: ")
+    if not check_food_name(food_name):
+        print("There is no such kind of food")
+        return search_kitchen()
+    else:
+        for kitchen_name, foods in database.items():
+            if food_name in foods:
+                print(f"Restaurant: {kitchen_name.title()}, Price: {foods[food_name]}")
+        return show_menu()
 
-    print("Wrong code!!!")
-    return exchange_currency()
+
+def delete_kitchen():
+    kitchen_name = input("Enter kitchen name: ")
+    if not check_kitchen_name(kitchen_name):
+        print("There is no such kind of kitchen")
+        return delete_kitchen()
+    else:
+        database.pop(kitchen_name)
+        return show_menu()
 
 
-def search_currency():
-    title = input("Enter the currency_dict name: ").lower()
-    for currency in data:
-        if title in currency['title']:
-            print(f"{currency['code']}\t {currency['cb_price']} \t {currency['title']}")
+def show_all_kitchens():
+    for kitchen_name, foods in database.items():
+        print(f"Restaurant: {kitchen_name.title()}")
+        for food_name, price in foods.items():
+            print(f"{food_name}: {price}")
     return show_menu()
 
 
 def show_menu():
     text = """
-    1. Exchange the currency_dict:
-    2. Other currency_dict in soum:
-    3. From to exchange:
-    4. Search with title:
-    5. Exit
+    Menu: Select the desired section
+    1. Add kitchen and food
+    2. Show all kitchens
+    3. Search kitchen by name
+    4. Search food by name
+    5. Delete kitchen by name
+    6. Exit
     """
     print(text)
-
     user_input = int(input("Choose from menu: "))
     if user_input == 1:
-        exchange_currency()
+        add_kitchen()
     elif user_input == 2:
-        other_currency()
+        show_all_kitchens()
     elif user_input == 3:
-        pass
+        search_kitchen()
     elif user_input == 4:
-        search_currency()
+        search_food()
+    elif user_input == 5:
+        delete_kitchen()
+    elif user_input == 6:
+        print("Good bye! Thank you for using the service")
     else:
-        print("Good bye!")
-    return
+        print("No such information is available")
+        return show_menu()
 
 
 if __name__ == "__main__":
