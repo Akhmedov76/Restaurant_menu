@@ -1,0 +1,61 @@
+from app import data
+
+
+def exchange_currency():
+    soum = int(input("Enter your money in soum: "))
+    code = input("Enter the code of currency_dict: ").upper()
+    for currency in data:
+        if currency['code'] == code:
+            result = soum / float(currency['cb_price'])
+            print(f"Your money in {currency['code']} = {result}")
+            return show_menu()
+
+    print("Wrong code")
+    return exchange_currency()
+
+
+def other_currency():
+    code = input("Enter the code of currency_dict: ").upper()
+    for currency in data:
+        if currency['code'] == code:
+            print(f"{currency['code']} is {currency['cb_price']} soum")
+            return show_menu()
+
+    print("Wrong code!!!")
+    return exchange_currency()
+
+
+def search_currency():
+    title = input("Enter the currency_dict name: ").lower()
+    for currency in data:
+        if title in currency['title']:
+            print(f"{currency['code']}\t {currency['cb_price']} \t {currency['title']}")
+    return show_menu()
+
+
+def show_menu():
+    text = """
+    1. Exchange the currency_dict:
+    2. Other currency_dict in soum:
+    3. From to exchange:
+    4. Search with title:
+    5. Exit
+    """
+    print(text)
+
+    user_input = int(input("Choose from menu: "))
+    if user_input == 1:
+        exchange_currency()
+    elif user_input == 2:
+        other_currency()
+    elif user_input == 3:
+        pass
+    elif user_input == 4:
+        search_currency()
+    else:
+        print("Good bye!")
+    return
+
+
+if __name__ == "__main__":
+    show_menu()
